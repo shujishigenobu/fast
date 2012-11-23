@@ -52,6 +52,14 @@ class FastaFileManipulate
     n
   end
 
+  def translate
+    open do |fas|
+      nuc = Bio::Sequence::NA.new(fas.seq)
+      pep = nuc.translate
+      puts pep.to_fasta(fas.definition, 60)
+    end
+  end
+
 end
 
 
@@ -88,6 +96,11 @@ when "countnuc"
   Trollop::options do
     puts ffm.count_total_bases
   end
+when "translate"
+  Trollop::options do 
+    ffm.translate
+  end
+
 else
 end
 
