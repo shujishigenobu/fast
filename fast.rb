@@ -60,54 +60,76 @@ class FastaFileManipulate
     end
   end
 
+  def filter(conditions={})
+    passed = false
+    minlen = conditions[:minlen]
+    maxlen = conditions[:maxlen]
+    open do |fas|
+      passed = true if minlen && fas.length >= minlen
+      puts fas if passed
+    end
+  end
+
 end
 
 
-SUB_COMMANDS = %w{desc ids length}
+SUB_COMMANDS = %w{desc ids length count countnuc translate filter}
 
 global_opts = Trollop::options do
-  banner "fast is a toolbox to manipulate fasta file"
+  banner "fast is a toolbox to manipulate maltifasta file"
   opt :quiet, "quiet mode", :short => "-q"
   stop_on SUB_COMMANDS
 end
 
 cmd = ARGV.shift
-infile = ARGV.shift
-ffm = FastaFileManipulate.new(infile)
 
 cmd_opts = case cmd
 when "desc"
   Trollop::options do
-    ffm.show_descriptions
+#    ffm = FastaFileManipulate.new(ARGV.shift)
+#    ffm.show_descriptions
+
   end
 when "ids"
   Trollop::options do
-    ffm.show_ids
+ #   ffm.show_ids
   end
 when "length"
   Trollop::options do
-    ffm.show_length
+ #   ffm.show_length
   end
 when "count"
   Trollop::options do
-    puts ffm.count_entries
+ #   puts ffm.count_entries
   end
 when "countnuc"
   Trollop::options do
-    puts ffm.count_total_bases
+ #   puts ffm.count_total_bases
   end
 when "translate"
   Trollop::options do 
-    ffm.translate
+ #   ffm.translate
   end
-
+when "filter"
+  Trollop::options do
+    opt :minlen, "min length to show", :type => :integer 
+  end
 else
 end
 
 
-# puts "Global options: #{global_opts.inspect}"
-# puts "Subcommand: #{cmd.inspect}"
-# puts "Subcommand options: #{cmd_opts.inspect}"
-# puts "Remaining arguments: #{ARGV.inspect}"
 
-  
+ puts "Global options: #{global_opts.inspect}"
+ puts "Subcommand: #{cmd.inspect}"
+ puts "Subcommand options: #{cmd_opts.inspect}"
+puts "Remaining arguments: #{ARGV.inspect}"
+
+case cmd
+when "desc", "ids", "length", "translate"
+  ffm = FastaFileManipulate.new(ARGV.shift)
+  ffm.show_descriptions
+when "filter"
+  ffm = FastaFileManipulate.new(ARGV.shift)
+  ffm.filter({:minlen => cmd_opts[:minlen]})
+else
+end
