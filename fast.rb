@@ -83,24 +83,20 @@ end
 
 cmd = ARGV.shift
 
+
+## Parse subcommand options
 cmd_opts = case cmd
 when "desc"
-  Trollop::options do
-#    ffm = FastaFileManipulate.new(ARGV.shift)
-#    ffm.show_descriptions
-
+  Trollop::options do   
   end
 when "ids"
   Trollop::options do
- #   ffm.show_ids
   end
 when "length"
   Trollop::options do
- #   ffm.show_length
   end
 when "count"
   Trollop::options do
- #   puts ffm.count_entries
   end
 when "countnuc"
   Trollop::options do
@@ -108,7 +104,6 @@ when "countnuc"
   end
 when "translate"
   Trollop::options do 
- #   ffm.translate
   end
 when "filter"
   Trollop::options do
@@ -118,16 +113,33 @@ else
 end
 
 
-
- puts "Global options: #{global_opts.inspect}"
- puts "Subcommand: #{cmd.inspect}"
- puts "Subcommand options: #{cmd_opts.inspect}"
+=begin
+## for debugging use
+puts "Global options: #{global_opts.inspect}"
+puts "Subcommand: #{cmd.inspect}"
+puts "Subcommand options: #{cmd_opts.inspect}"
 puts "Remaining arguments: #{ARGV.inspect}"
+=end
 
 case cmd
-when "desc", "ids", "length", "translate"
+when "desc"
   ffm = FastaFileManipulate.new(ARGV.shift)
   ffm.show_descriptions
+when "ids"
+  ffm = FastaFileManipulate.new(ARGV.shift)
+  ffm.show_ids
+when "length"
+  ffm = FastaFileManipulate.new(ARGV.shift)
+  ffm.show_length
+when "translate"
+  ffm = FastaFileManipulate.new(ARGV.shift)
+  ffm.translate
+when "count"
+  ffm = FastaFileManipulate.new(ARGV.shift)
+  puts ffm.count_entries
+when "countnuc"
+  ffm = FastaFileManipulate.new(ARGV.shift)
+  puts ffm.count_total_bases
 when "filter"
   ffm = FastaFileManipulate.new(ARGV.shift)
   ffm.filter({:minlen => cmd_opts[:minlen]})
