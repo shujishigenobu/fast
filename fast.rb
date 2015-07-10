@@ -61,11 +61,19 @@ class FastaFileManipulate
   end
 
   def filter(conditions={})
-    passed = false
+    STDERR.puts conditions.inspect
     minlen = conditions[:minlen]
     maxlen = conditions[:maxlen]
     open do |fas|
-      passed = true if minlen && fas.length >= minlen
+      passed = false
+      if minlen && (fas.length >= minlen)
+        passed = true 
+      end
+      if maxlen && (fas.length > maxlen)
+        passed = false
+      end
+
+#      p [fas.entry_id, fas.length, passed]
       puts fas if passed
     end
   end
@@ -108,18 +116,19 @@ when "translate"
 when "filter"
   Trollop::options do
     opt :minlen, "min length to show", :type => :integer 
+    opt :maxlen, "max length to show", :type => :integer
   end
 else
 end
 
 
-=begin
+
 ## for debugging use
-puts "Global options: #{global_opts.inspect}"
-puts "Subcommand: #{cmd.inspect}"
-puts "Subcommand options: #{cmd_opts.inspect}"
-puts "Remaining arguments: #{ARGV.inspect}"
-=end
+STDERR.puts "Global options: #{global_opts.inspect}"
+STDERR.puts "Subcommand: #{cmd.inspect}"
+STDERR.puts "Subcommand options: #{cmd_opts.inspect}"
+STDERR.puts "Remaining arguments: #{ARGV.inspect}"
+
 
 case cmd
 when "desc"
@@ -142,6 +151,9 @@ when "countnuc"
   puts ffm.count_total_bases
 when "filter"
   ffm = FastaFileManipulate.new(ARGV.shift)
-  ffm.filter({:minlen => cmd_opts[:minlen]})
+  ffm.filter({
+               :minlen => cmd_opts[:minlen],
+               :maxlen => cmd_opts[:maxlen]
+             })
 else
 end
